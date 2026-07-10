@@ -88,7 +88,7 @@ const checks = [
   ['crownless asset usage', '/assets/enemy-crownless.webp'],
   ['gloam asset usage', '/assets/enemy-gloam-hound.webp'],
   ['choir asset usage', '/assets/enemy-null-choir.webp'],
-  ['fictional disclaimer', 'Fictional interactive game concept'],
+  ['fictional disclaimer', 'Original fictional concept, unaffiliated with any existing franchise'],
 ]
 
 for (const [label, token] of checks) {

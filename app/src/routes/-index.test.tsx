@@ -54,7 +54,7 @@ describe('The Collegium campaign', () => {
     expect(screen.getByRole('button', { name: /null choir/i })).toBeTruthy()
     expect(screen.getByRole('button', { name: /gloam hound/i })).toBeTruthy()
     expect(screen.getByRole('button', { name: /crownless/i })).toBeTruthy()
-    expect(screen.getByText(/fictional interactive game concept/i)).toBeTruthy()
+    expect(screen.getByText(/original fictional concept/i)).toBeTruthy()
   })
 
   it('rewrites the discipline instrument when Bind is selected', async () => {
@@ -68,6 +68,18 @@ describe('The Collegium campaign', () => {
     expect(screen.getByText(/fix hostile matter to a shape/i)).toBeTruthy()
   })
 
+  it('moves focus with the selected discipline on arrow keys', () => {
+    renderPage()
+
+    const severTab = screen.getByRole('tab', { name: /sever/i })
+    const bindTab = screen.getByRole('tab', { name: /bind/i })
+    severTab.focus()
+    fireEvent.keyDown(severTab, { key: 'ArrowRight' })
+
+    expect(document.activeElement).toBe(bindTab)
+    expect(bindTab.getAttribute('aria-selected')).toBe('true')
+  })
+
   it('brings the selected enemy dossier forward', () => {
     renderPage()
 
@@ -76,5 +88,17 @@ describe('The Collegium campaign', () => {
 
     expect(gloamHound.getAttribute('aria-expanded')).toBe('true')
     expect(screen.getByText('Bind the reflection, not the body.')).toBeTruthy()
+  })
+
+  it('moves focus with the expanded enemy dossier on arrow keys', () => {
+    renderPage()
+
+    const crownless = screen.getByRole('button', { name: /crownless/i })
+    const gloamHound = screen.getByRole('button', { name: /gloam hound/i })
+    crownless.focus()
+    fireEvent.keyDown(crownless, { key: 'ArrowRight' })
+
+    expect(document.activeElement).toBe(gloamHound)
+    expect(gloamHound.getAttribute('aria-expanded')).toBe('true')
   })
 })

@@ -249,8 +249,7 @@ a:focus-visible,
   width: min(800px, calc(100% - 2.5rem));
 }
 
-.hero-kicker,
-.section-kicker {
+.hero-kicker {
   margin: 0 0 1.15rem;
   color: var(--accent);
   font-size: 0.68rem;
@@ -930,11 +929,10 @@ a:focus-visible,
 
 .keeper-role {
   margin: 0 0 1.2rem;
-  color: var(--accent);
-  font-size: 0.68rem;
-  font-weight: 760;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 620;
+  letter-spacing: 0.02em;
 }
 
 .keeper-copy h2 {
@@ -1384,8 +1382,7 @@ a:focus-visible,
     justify-content: space-between;
   }
 
-  .hero-kicker,
-  .section-kicker {
+  .hero-kicker {
     font-size: 0.6rem;
   }
 
@@ -1438,8 +1435,24 @@ a:focus-visible,
     transition-duration: 0.01ms !important;
   }
 
-  .hero-light {
+  .hero-light,
+  .reading-progress {
     display: none;
+  }
+
+  .hero-copy,
+  .oath-copy,
+  .discipline-heading,
+  .discipline-panel > div,
+  .hall-copy,
+  .dossier-heading,
+  .keeper-copy,
+  .combat-copy,
+  .hero-image,
+  .hall-section > img,
+  .combat-media > img {
+    opacity: 1 !important;
+    transform: none !important;
   }
 
   .hero-image,

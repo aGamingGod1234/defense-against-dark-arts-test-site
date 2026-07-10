@@ -7,7 +7,7 @@ const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'VideoGame',
   name: 'Defense Against the Dark Arts',
-  description: 'An original fictional dark-fantasy action game and interactive website concept.',
+  description: 'An independent original dark-fantasy action game concept, unaffiliated with any existing franchise.',
   url: siteUrl,
   applicationCategory: 'Game',
   isAccessibleForFree: true,
@@ -21,12 +21,12 @@ export const Route = createRootRoute({
       { title: 'Defense Against the Dark Arts | Original game concept' },
       {
         name: 'description',
-        content: 'Enter Vesper Collegium, study three defensive disciplines, and confront the shapes hidden inside the Black Archive.',
+        content: 'An independent original dark-fantasy concept. Enter Vesper Collegium and confront the shapes hidden inside the Black Archive.',
       },
       { property: 'og:title', content: 'Defense Against the Dark Arts' },
       {
         property: 'og:description',
-        content: 'Read the curse. Break its shape. Guard the last light.',
+        content: 'An independent original concept. Read the curse. Break its shape. Guard the last light.',
       },
       { property: 'og:image', content: `${siteUrl}assets/hero.webp` },
       { property: 'og:url', content: siteUrl },

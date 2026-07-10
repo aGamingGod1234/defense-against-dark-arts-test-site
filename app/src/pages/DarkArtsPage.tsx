@@ -1,7 +1,7 @@
 import {
   AnimatePresence,
+  MotionConfig,
   motion,
-  useReducedMotion,
   useScroll,
   useSpring,
   useTransform,
@@ -84,21 +84,22 @@ const enemies: Enemy[] = [
 
 export function DarkArtsPage() {
   return (
-    <main className="dark-arts-page" id="top">
-      <ReadingProgress />
-      <Hero />
-      <Oath />
-      <Disciplines />
-      <Hall />
-      <Dossier />
-      <Keeper />
-      <Combat />
-    </main>
+    <MotionConfig reducedMotion="user">
+      <main className="dark-arts-page" id="top">
+        <ReadingProgress />
+        <Hero />
+        <Oath />
+        <Disciplines />
+        <Hall />
+        <Dossier />
+        <Keeper />
+        <Combat />
+      </main>
+    </MotionConfig>
   )
 }
 
 function ReadingProgress() {
-  const reduce = useReducedMotion()
   const { scrollYProgress } = useScroll()
   const progress = useSpring(scrollYProgress, {
     stiffness: 130,
@@ -109,7 +110,7 @@ function ReadingProgress() {
   return (
     <motion.div
       className="reading-progress"
-      style={{ scaleX: reduce ? 1 : progress }}
+      style={{ scaleX: progress }}
       aria-hidden="true"
     />
   )
@@ -117,7 +118,6 @@ function ReadingProgress() {
 
 function Hero() {
   const heroRef = useRef<HTMLElement>(null)
-  const reduce = useReducedMotion()
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ['start start', 'end start'],
@@ -126,7 +126,7 @@ function Hero() {
   const imageY = useTransform(scrollYProgress, [0, 1], [0, 42])
 
   function handlePointerMove(event: ReactPointerEvent<HTMLElement>) {
-    if (reduce) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const rect = event.currentTarget.getBoundingClientRect()
     event.currentTarget.style.setProperty('--hero-x', `${event.clientX - rect.left}px`)
     event.currentTarget.style.setProperty('--hero-y', `${event.clientY - rect.top}px`)
@@ -150,7 +150,9 @@ function Hero() {
         alt="An arcane warden faces a towering smoke-born figure in a ruined observatory"
         width="1536"
         height="1024"
-        style={{ scale: reduce ? 1.01 : imageScale, y: reduce ? 0 : imageY }}
+        fetchPriority="high"
+        decoding="async"
+        style={{ scale: imageScale, y: imageY }}
       />
       <div className="hero-scrim" aria-hidden="true" />
       <div className="hero-light" aria-hidden="true" />
@@ -170,7 +172,7 @@ function Hero() {
 
       <motion.div
         className="hero-copy"
-        initial={reduce ? false : { opacity: 0, y: 34 }}
+        initial={{ opacity: 0, y: 34 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
       >
@@ -194,11 +196,10 @@ function Hero() {
 }
 
 function Reveal({ children, className = '' }: { children: ReactNode; className?: string }) {
-  const reduce = useReducedMotion()
   return (
     <motion.div
       className={className}
-      initial={reduce ? false : { opacity: 0, y: 34 }}
+      initial={{ opacity: 0, y: 34 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.22 }}
       transition={{ duration: 0.72, ease: [0.16, 1, 0.3, 1] }}
@@ -210,13 +211,11 @@ function Reveal({ children, className = '' }: { children: ReactNode; className?:
 
 function Oath() {
   const [sealed, setSealed] = useState(false)
-  const reduce = useReducedMotion()
 
   return (
     <section className="oath-section" id="oath" aria-labelledby="oath-title">
       <div className="oath-index" aria-hidden="true">I</div>
       <Reveal className="oath-copy">
-        <p className="section-kicker">The first law</p>
         <h2 id="oath-title">Darkness is not a weapon.<br />It is a contract.</h2>
         <p>
           Every hostile rite asks the world to agree. Your task is not to cast harder. Your task is to find the clause that can be refused.
@@ -227,7 +226,7 @@ function Oath() {
         className={`oath-seal ${sealed ? 'is-sealed' : ''}`}
         aria-pressed={sealed}
         onClick={() => setSealed((value) => !value)}
-        whileTap={reduce ? undefined : { scale: 0.97 }}
+        whileTap={{ scale: 0.97 }}
       >
         <span className="seal-rings" aria-hidden="true">
           <i />
@@ -244,17 +243,22 @@ function Oath() {
 function Disciplines() {
   const [activeIndex, setActiveIndex] = useState(0)
   const discipline = disciplines[activeIndex]
-  const reduce = useReducedMotion()
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([])
+
+  function selectTab(index: number, moveFocus = false) {
+    setActiveIndex(index)
+    if (moveFocus) tabRefs.current[index]?.focus()
+  }
 
   function handleKeys(event: KeyboardEvent<HTMLDivElement>) {
     if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
     event.preventDefault()
-    if (event.key === 'Home') setActiveIndex(0)
-    else if (event.key === 'End') setActiveIndex(disciplines.length - 1)
-    else {
-      const shift = event.key === 'ArrowRight' ? 1 : -1
-      setActiveIndex((current) => (current + shift + disciplines.length) % disciplines.length)
-    }
+    const nextIndex = event.key === 'Home'
+      ? 0
+      : event.key === 'End'
+        ? disciplines.length - 1
+        : (activeIndex + (event.key === 'ArrowRight' ? 1 : -1) + disciplines.length) % disciplines.length
+    selectTab(nextIndex, true)
   }
 
   return (
@@ -280,7 +284,8 @@ function Disciplines() {
               aria-selected={activeIndex === index}
               tabIndex={activeIndex === index ? 0 : -1}
               className={activeIndex === index ? 'is-active' : ''}
-              onClick={() => setActiveIndex(index)}
+              ref={(node) => { tabRefs.current[index] = node }}
+              onClick={() => selectTab(index)}
               key={item.name}
             >
               <span>0{index + 1}</span>
@@ -292,7 +297,7 @@ function Disciplines() {
         <div className="discipline-orbit" style={{ '--orbit-turn': discipline.angle } as CSSProperties} aria-hidden="true">
           <motion.div
             className="orbit-core"
-            animate={{ rotate: reduce ? 0 : activeIndex * 120 }}
+            animate={{ rotate: activeIndex * 120 }}
             transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
           >
             <i />
@@ -312,9 +317,9 @@ function Disciplines() {
           <AnimatePresence mode="wait">
             <motion.div
               key={discipline.name}
-              initial={reduce ? false : { opacity: 0, x: 20 }}
+              initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              exit={reduce ? undefined : { opacity: 0, x: -12 }}
+              exit={{ opacity: 0, x: -12 }}
               transition={{ duration: 0.38, ease: [0.16, 1, 0.3, 1] }}
             >
               <p>{discipline.verb}</p>
@@ -331,7 +336,6 @@ function Disciplines() {
 
 function Hall() {
   const hallRef = useRef<HTMLElement>(null)
-  const reduce = useReducedMotion()
   const { scrollYProgress } = useScroll({ target: hallRef, offset: ['start end', 'end start'] })
   const imageY = useTransform(scrollYProgress, [0, 1], [-26, 26])
 
@@ -342,11 +346,12 @@ function Hall() {
         alt="The monumental Hall of Vows suspended above a deep black archive"
         width="1536"
         height="1024"
-        style={{ y: reduce ? 0 : imageY }}
+        loading="lazy"
+        decoding="async"
+        style={{ y: imageY }}
       />
       <div className="hall-overlay" aria-hidden="true" />
       <Reveal className="hall-copy">
-        <p className="section-kicker">Beneath the city</p>
         <h2 id="hall-title">The Hall of Vows remembers every failed defense.</h2>
         <p>Walk its suspended archives. Recover abandoned methods. Decide which promises still deserve to hold.</p>
       </Reveal>
@@ -357,19 +362,20 @@ function Hall() {
 
 function Dossier() {
   const [activeIndex, setActiveIndex] = useState(0)
-  const reduce = useReducedMotion()
+  const enemyRefs = useRef<Array<HTMLButtonElement | null>>([])
 
   function handleKeys(event: KeyboardEvent<HTMLDivElement>) {
     if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return
     event.preventDefault()
     const direction = event.key === 'ArrowRight' ? 1 : -1
-    setActiveIndex((current) => (current + direction + enemies.length) % enemies.length)
+    const nextIndex = (activeIndex + direction + enemies.length) % enemies.length
+    setActiveIndex(nextIndex)
+    enemyRefs.current[nextIndex]?.focus()
   }
 
   return (
     <section className="dossier-section" id="dossier" aria-labelledby="dossier-title">
       <Reveal className="dossier-heading">
-        <p className="section-kicker">The hostile index</p>
         <h2 id="dossier-title">Nothing enters the archive without leaving a shape.</h2>
       </Reveal>
 
@@ -382,14 +388,15 @@ function Dossier() {
               className={`enemy-slice ${active ? 'is-active' : ''}`}
               aria-pressed={active}
               aria-expanded={active}
+              ref={(node) => { enemyRefs.current[index] = node }}
               onClick={() => setActiveIndex(index)}
               onFocus={() => setActiveIndex(index)}
               onPointerEnter={() => setActiveIndex(index)}
               animate={{ flexGrow: active ? 3.25 : 1 }}
-              transition={reduce ? { duration: 0 } : { duration: 0.48, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 0.48, ease: [0.16, 1, 0.3, 1] }}
               key={enemy.name}
             >
-              <img src={enemy.image} alt="" width="1024" height="1536" />
+              <img src={enemy.image} alt="" width="1024" height="1536" loading="lazy" decoding="async" />
               <span className="enemy-scrim" aria-hidden="true" />
               <span className="enemy-number">0{index + 1}</span>
               <span className="enemy-name">{enemy.name}</span>
@@ -417,6 +424,8 @@ function Keeper() {
           alt="The Lantern Keeper carries a fractured black-glass lantern through a storm"
           width="1024"
           height="1536"
+          loading="lazy"
+          decoding="async"
         />
       </div>
       <Reveal className="keeper-copy">
@@ -436,7 +445,6 @@ function Keeper() {
 }
 
 function Combat() {
-  const reduce = useReducedMotion()
   return (
     <section className="combat-section" id="collegium" aria-labelledby="combat-title">
       <div className="combat-media">
@@ -445,7 +453,9 @@ function Combat() {
           alt="A warden catches a shadow creature against a translucent ward plane in heavy rain"
           width="1536"
           height="1024"
-          initial={reduce ? false : { scale: 1.035 }}
+          loading="lazy"
+          decoding="async"
+          initial={{ scale: 1.035 }}
           whileInView={{ scale: 1 }}
           viewport={{ once: true, amount: 0.35 }}
           transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
@@ -459,13 +469,12 @@ function Combat() {
 
       <footer className="closing-section">
         <div>
-          <p className="section-kicker">The threshold is open</p>
           <h2>Enter the Collegium.</h2>
         </div>
         <a className="closing-action" href="#disciplines">
           Begin the study <span aria-hidden="true">↗</span>
         </a>
-        <p className="concept-disclaimer">Fictional interactive game concept. No account, purchase, or release is offered.</p>
+        <p className="concept-disclaimer">Original fictional concept, unaffiliated with any existing franchise. No account, purchase, or release is offered.</p>
         <a className="back-to-top" href="#top">Back to top</a>
       </footer>
     </section>
