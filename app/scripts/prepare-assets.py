@@ -38,5 +38,9 @@ y = (512 - (bbox[3] - bbox[1])) / 2 - bbox[1] - 8
 draw.text((x, y), "D", fill="#f0f2e9", font=font)
 favicon.save(ROOT / "favicon.png", "PNG", optimize=True)
 
+PUBLIC = ROOT.parent
+favicon.resize((192, 192), Image.Resampling.LANCZOS).save(PUBLIC / "logo192.png", "PNG", optimize=True)
+favicon.save(PUBLIC / "logo512.png", "PNG", optimize=True)
+
 for path in sorted(ROOT.iterdir()):
     print(f"{path.name}\t{path.stat().st_size}")

@@ -26,19 +26,18 @@ function walk(dir, files = []) {
 const required = [
   'design-brief.md',
   'src/routes/index.tsx',
+  'src/pages/DarkArtsPage.tsx',
   'src/routes/__root.tsx',
   'src/styles.css',
   'src/app-meta.json',
-  'public/assets/hero-croissant.png',
-  'public/assets/pastry-collection.png',
-  'public/assets/pastry-croissant.png',
-  'public/assets/pastry-chocolat.png',
-  'public/assets/pastry-chausson.png',
-  'public/assets/pastry-brioche.png',
-  'public/assets/pastry-tarte.png',
-  'public/assets/atelier-fold.png',
-  'public/assets/storefront.png',
-  'public/assets/les-moines-monogram.png',
+  'public/assets/hero.webp',
+  'public/assets/hall.webp',
+  'public/assets/combat.webp',
+  'public/assets/keeper.webp',
+  'public/assets/enemy-crownless.webp',
+  'public/assets/enemy-gloam-hound.webp',
+  'public/assets/enemy-null-choir.webp',
+  'public/assets/favicon.png',
   'public/robots.txt',
   'public/sitemap.xml',
 ]
@@ -53,14 +52,14 @@ const visibleSource = sourceFiles
   .map((file) => [file, read(file)])
 
 const bannedTerms = [
+  /les moines/i,
+  /croissant/i,
+  /harry potter/i,
+  /hogwarts/i,
   /lorem ipsum/i,
   /todo/i,
-  /scaffold marker/i,
   /h-screen/,
-  /opacity-0/,
   /\u2014|\u2013/,
-  /#f5f1ea|#f7f5f1|#fbf8f1|#efeae0|#ece6db|#faf7f1|#e8dfcb/i,
-  /#b08947|#b6553a|#9a2436|#9c6e2a|#bc7c3a|#7d5621/i,
 ]
 
 for (const [file, text] of visibleSource) {
@@ -69,43 +68,36 @@ for (const [file, text] of visibleSource) {
   }
 }
 
-const index = read('src/routes/index.tsx')
+const index = read('src/routes/index.tsx') + read('src/pages/DarkArtsPage.tsx')
 const styles = read('src/styles.css')
 const brief = read('design-brief.md')
 
 const checks = [
   ['hero pointer response', 'onPointerMove={handlePointerMove}'],
-  ['pastry arrow-key navigation', "event.key !== 'ArrowRight'"],
-  ['pastry accessible state', 'aria-pressed={isActive}'],
-  ['craft range', 'id="craft-stage"'],
-  ['quantity limit', 'Math.min(6'],
-  ['local confirmation', 'Aucun ordre ni paiement'],
-  ['FAQ disclosure state', 'aria-expanded={isOpen}'],
+  ['discipline tabs', 'role="tablist"'],
+  ['discipline keyboard navigation', "event.key === 'ArrowRight'"],
+  ['enemy accessible state', 'aria-pressed={active}'],
+  ['oath state', 'aria-pressed={sealed}'],
   ['reduced-motion CSS', 'prefers-reduced-motion'],
   ['dynamic viewport hero', 'min-height: 100dvh'],
   ['horizontal overflow guard', 'overflow-x: hidden'],
-  ['hero asset usage', '/assets/hero-croissant.png'],
-  ['pastry asset usage', '/assets/pastry-collection.png'],
-  ['croissant crop usage', '/assets/pastry-croissant.png'],
-  ['chocolat crop usage', '/assets/pastry-chocolat.png'],
-  ['chausson crop usage', '/assets/pastry-chausson.png'],
-  ['brioche crop usage', '/assets/pastry-brioche.png'],
-  ['tarte crop usage', '/assets/pastry-tarte.png'],
-  ['atelier asset usage', '/assets/atelier-fold.png'],
-  ['storefront asset usage', '/assets/storefront.png'],
-  ['monogram asset usage', '/assets/les-moines-monogram.png'],
-  ['distinct hero CTA', 'className="hero-cta"'],
-  ['distinct box CTA', 'className="box-submit"'],
-  ['distinct visit CTA', 'className="visit-link"'],
+  ['hero asset usage', '/assets/hero.webp'],
+  ['hall asset usage', '/assets/hall.webp'],
+  ['combat asset usage', '/assets/combat.webp'],
+  ['keeper asset usage', '/assets/keeper.webp'],
+  ['crownless asset usage', '/assets/enemy-crownless.webp'],
+  ['gloam asset usage', '/assets/enemy-gloam-hound.webp'],
+  ['choir asset usage', '/assets/enemy-null-choir.webp'],
+  ['fictional disclaimer', 'Fictional interactive game concept'],
 ]
 
 for (const [label, token] of checks) {
   if (!index.includes(token) && !styles.includes(token)) fail(`Missing check: ${label}`)
 }
 
-if (index.includes('localStorage') || index.includes('sessionStorage')) {
-  fail('Local browser storage is not permitted for the demo order state')
-}
+const assetFiles = walk('public/assets')
+const assetBytes = assetFiles.reduce((total, file) => total + statSync(join(root, file)).size, 0)
+if (assetBytes > 2.5 * 1024 * 1024) fail(`Asset budget exceeded: ${assetBytes} bytes`)
 
 if (strict) {
   for (const heading of ['## Motion spec', '## Self-critique before coding', '## Section distinctiveness ledger', '## CTA inventory']) {
@@ -119,5 +111,4 @@ if (failures.length) {
   process.exit(1)
 }
 
-console.log('QA passed')
-console.log(`Checked ${required.length} required files and ${visibleSource.length} source files`)
+console.log(`QA passed: ${required.length} required files, ${assetBytes} asset bytes.`)

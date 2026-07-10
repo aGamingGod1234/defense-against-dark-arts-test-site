@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "app",
+      "name": "defense-against-dark-arts-test-site",
       "dependencies": {
         "@fontsource-variable/bodoni-moda": "^5.2.7",
         "@fontsource-variable/manrope": "^5.2.8",

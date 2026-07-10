@@ -1,14 +1,14 @@
-# Les Moines App
+# Defense Against the Dark Arts
 
-The application lives in `src/routes/` and uses TanStack Start, React 19, Vite 7, Tailwind v4 and Framer Motion.
+An original fictional dark-fantasy action game website benchmark built with TanStack Start, React 19, Tailwind 4, and Framer Motion.
 
-Run quality gates from this directory:
+Run the quality gates from this directory:
 
 ```bash
-bun run qa:fill -- --strict
-bun run typecheck
-bun run build
-bun run build:design
+npm run qa:fill -- --strict
+npm run typecheck
+npm test
+npm run build
 ```
 
-The experience is a fictional local demo. It creates no order, payment or stored customer record.
+The experience is a local concept. It creates no account, purchase, or stored player record.
