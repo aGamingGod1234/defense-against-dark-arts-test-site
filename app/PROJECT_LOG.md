@@ -40,3 +40,9 @@
 - Reviewed a full-page visual pass plus the discipline, Hall, dossier, Keeper, combat, and closing compositions.
 - Confirmed zero horizontal overflow at 1440px, 768px, and 390px.
 - Confirmed live spell, enemy, and oath state changes and a clean browser console.
+
+### Release
+- GitHub: `https://github.com/aGamingGod1234/defense-against-dark-arts-test-site`
+- Production: `https://defense-against-dark-arts.vercel.app`
+- Deployment: `dpl_7y2aiL2jH9XK6x1ihuL7QxoGwiAs` (`Ready`)
+- Vercel SSO and Git fork protection are disabled for public review.
