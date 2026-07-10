@@ -1,0 +1,17 @@
+{
+  "name": "les-moines-test-site",
+  "type": "website",
+  "runtime": "tanstack-start",
+  "deploy": {
+    "preview": "vercel",
+    "production": "vercel"
+  },
+  "features": [
+    "cursor-reactive image hero",
+    "keyboard-accessible pastry accordion",
+    "interactive craft dial",
+    "scroll-responsive atelier chapter",
+    "local pastry-box builder",
+    "accessible FAQ disclosures"
+  ]
+}
